@@ -63,8 +63,9 @@ export function useToggleFlag() {
     onError: (_e, _v, ctx) => {
       if (ctx?.prev) qc.setQueryData(techniquesKey, ctx.prev);
     },
-    onSettled: () => {
+    onSettled: (_data, _err, vars) => {
       qc.invalidateQueries({ queryKey: techniquesKey });
+      qc.invalidateQueries({ queryKey: ['technique', vars.id] });
     },
   });
 }
@@ -77,6 +78,9 @@ export function useDeleteTechnique() {
       const { error } = await supabase.from('techniques').delete().eq('id', id);
       if (error) throw error;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: techniquesKey }),
+    onSuccess: (_data, id) => {
+      qc.invalidateQueries({ queryKey: techniquesKey });
+      qc.invalidateQueries({ queryKey: ['technique', id] });
+    },
   });
 }

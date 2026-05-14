@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { compressToWebp } from '@/lib/image';
 
@@ -20,12 +20,15 @@ export function ImageUploader({
     initialUrl ? { kind: 'existing', url: initialUrl } : { kind: 'none' },
   );
   const [err, setErr] = useState<string | null>(null);
+  const lastUrlRef = useRef<string | null>(null);
 
   async function pick(file: File) {
     setErr(null);
     try {
       const blob = await compressToWebp(file);
       const previewUrl = URL.createObjectURL(blob);
+      if (lastUrlRef.current) URL.revokeObjectURL(lastUrlRef.current);
+      lastUrlRef.current = previewUrl;
       const next: ImageDraft = { kind: 'new', file, previewUrl, blob };
       setState(next);
       onChange(next);
@@ -35,10 +38,18 @@ export function ImageUploader({
   }
 
   function clear() {
+    if (lastUrlRef.current) URL.revokeObjectURL(lastUrlRef.current);
+    lastUrlRef.current = null;
     const next: ImageDraft = { kind: 'none' };
     setState(next);
     onChange(next);
   }
+
+  useEffect(() => {
+    return () => {
+      if (lastUrlRef.current) URL.revokeObjectURL(lastUrlRef.current);
+    };
+  }, []);
 
   const url =
     state.kind === 'existing' ? state.url : state.kind === 'new' ? state.previewUrl : null;

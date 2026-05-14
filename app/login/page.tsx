@@ -1,12 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/components/Toast';
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const sp = useSearchParams();
+  const next = sp.get('next');
   const toast = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +24,7 @@ export default function LoginPage() {
       toast(`로그인 실패: ${error.message}`, 'error');
       return;
     }
-    router.replace('/');
+    router.replace(next && next.startsWith('/') ? next : '/');
     router.refresh();
   }
 
@@ -55,5 +57,13 @@ export default function LoginPage() {
         </button>
       </form>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
