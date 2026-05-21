@@ -54,7 +54,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={busy}
-          className="w-full rounded-md bg-blue-600 text-white py-2 disabled:opacity-50"
+          className="w-full rounded-md bg-primary text-primary-foreground py-2 disabled:opacity-50"
         >
           {busy ? '로그인 중…' : '로그인'}
         </button>
@@ -65,7 +65,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<p className="p-6 text-sm text-gray-500">불러오는 중…</p>}>
+    <Suspense fallback={<p className="p-6 text-sm text-foreground-muted">불러오는 중…</p>}>
       <LoginForm />
     </Suspense>
   );

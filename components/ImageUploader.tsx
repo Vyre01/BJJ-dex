@@ -57,11 +57,11 @@ export function ImageUploader({
   return (
     <div className="space-y-2">
       {url ? (
-        <div className="relative w-full aspect-square bg-gray-100 rounded">
+        <div className="relative w-full aspect-square bg-surface-muted rounded">
           <Image src={url} alt="미리보기" fill className="object-cover rounded" sizes="100vw" unoptimized />
         </div>
       ) : (
-        <div className="w-full aspect-square bg-gray-100 rounded flex items-center justify-center text-gray-400 text-sm">
+        <div className="w-full aspect-square bg-surface-muted rounded flex items-center justify-center text-foreground-subtle text-sm">
           이미지 없음
         </div>
       )}
@@ -84,7 +84,7 @@ export function ImageUploader({
           </button>
         )}
       </div>
-      {err && <p className="text-sm text-red-600">{err}</p>}
+      {err && <p className="text-sm text-danger">{err}</p>}
     </div>
   );
 }

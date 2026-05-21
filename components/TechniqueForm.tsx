@@ -158,7 +158,7 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
         <button
           type="submit"
           disabled={busy}
-          className="rounded-md bg-blue-600 text-white px-4 py-2 disabled:opacity-50"
+          className="rounded-md bg-primary text-primary-foreground px-4 py-2 disabled:opacity-50"
         >
           {busy ? '저장 중…' : '저장'}
         </button>

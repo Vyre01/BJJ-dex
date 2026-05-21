@@ -14,8 +14,8 @@ export default function EditCardPage({ params }: { params: Promise<{ id: string 
       <Header />
       <main className="max-w-xl mx-auto p-4">
         <h1 className="text-xl font-bold mb-4">기술 수정</h1>
-        {isLoading && <p className="text-sm text-gray-500">불러오는 중…</p>}
-        {error && <p className="text-sm text-red-600">{(error as Error).message}</p>}
+        {isLoading && <p className="text-sm text-foreground-muted">불러오는 중…</p>}
+        {error && <p className="text-sm text-danger">{(error as Error).message}</p>}
         {data && <TechniqueForm initial={data} />}
       </main>
     </>
