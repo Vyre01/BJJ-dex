@@ -36,7 +36,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 ? 'bg-danger'
                 : t.tone === 'success'
                 ? 'bg-learned'
-                : 'bg-foreground')
+                : 'bg-surface-inverse')
             }
           >
             {t.text}

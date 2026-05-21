@@ -6,6 +6,7 @@
   --color-surface: #ffffff;
   --color-surface-muted: #f1f5f9;
   --color-surface-sunken: #f8fafc;
+  --color-surface-inverse: #0f172a;
 
   /* Borders */
   --color-border: #e2e8f0;
