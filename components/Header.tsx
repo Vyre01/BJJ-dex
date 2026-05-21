@@ -15,7 +15,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-20 bg-white border-b">
+    <header className="sticky top-0 z-20 bg-white border-b pt-[env(safe-area-inset-top)]">
       <div className="flex items-center justify-between px-3 h-12">
         <Link href="/" className="font-bold">GrappleGuide</Link>
         <nav className="flex items-center gap-3 text-sm">

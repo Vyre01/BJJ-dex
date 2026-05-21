@@ -35,7 +35,7 @@ export function FilterBar() {
   }, [qInput, filters, router, pathname]);
 
   return (
-    <div className="space-y-2 p-2 bg-white border-b sticky top-12 z-10">
+    <div className="space-y-2 p-2 bg-white border-b sticky top-[calc(3rem+env(safe-area-inset-top))] z-10">
       <input
         type="search"
         placeholder="🔍 기술명 검색…"
