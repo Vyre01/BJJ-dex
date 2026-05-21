@@ -13,7 +13,7 @@ export function StarRating(props: Props) {
     <div className={'inline-flex ' + cls} role={readonly ? 'img' : 'radiogroup'} aria-label={`난이도 ${value}/5`}>
       {[1, 2, 3, 4, 5].map((n) => {
         const filled = n <= value;
-        const common = filled ? 'text-yellow-500' : 'text-gray-300';
+        const common = filled ? 'text-favorite' : 'text-foreground-subtle';
         return readonly ? (
           <span key={n} className={common}>★</span>
         ) : (
