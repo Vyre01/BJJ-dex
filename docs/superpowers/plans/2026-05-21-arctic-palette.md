@@ -293,14 +293,14 @@ This file has multiple status tints (favorite active, learned active, learned-fa
 
 - [ ] **Step 1: Replace the bar container**
 
-Current line 38:
+Current line 38 (note: includes safe-area padding from PWA work):
 ```tsx
-<div className="space-y-2 p-2 bg-white border-b sticky top-12 z-10">
+<div className="space-y-2 p-2 bg-white border-b sticky top-[calc(3rem+env(safe-area-inset-top))] z-10">
 ```
 
 Edit to:
 ```tsx
-<div className="space-y-2 p-2 bg-surface border-b border-border sticky top-12 z-10">
+<div className="space-y-2 p-2 bg-surface border-b border-border sticky top-[calc(3rem+env(safe-area-inset-top))] z-10">
 ```
 
 - [ ] **Step 2: Replace favorite filter button (lines 79–89)**
@@ -983,13 +983,13 @@ Replace with:
 
 - [ ] **Step 5: `components/Fab.tsx` — fab button (line 13)**
 
-Current:
+Current (note: PWA safe-area positioning):
 ```tsx
-className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-blue-600 text-white text-3xl flex items-center justify-center shadow-lg"
+className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-[calc(1.5rem+env(safe-area-inset-right))] z-30 w-14 h-14 rounded-full bg-blue-600 text-white text-3xl flex items-center justify-center shadow-lg"
 ```
 Replace with:
 ```tsx
-className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground text-3xl flex items-center justify-center shadow-lg"
+className="fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] right-[calc(1.5rem+env(safe-area-inset-right))] z-30 w-14 h-14 rounded-full bg-primary text-primary-foreground text-3xl flex items-center justify-center shadow-lg"
 ```
 
 - [ ] **Step 6: `components/Toast.tsx` — tone backgrounds (lines 33–39)**
@@ -1028,11 +1028,63 @@ grep -nE "(bg-gray|text-gray|bg-yellow|bg-emerald|bg-red|bg-blue|text-yellow|tex
 ```
 Expected: empty.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 8: Align PWA brand hex colors with new primary**
+
+The PWA branding currently uses `#2563eb` (blue-600). Align it with the arctic primary `#1e293b` (slate-800) for consistency. Manifest also uses `#f9fafb` (gray-50) for background — align with our `--color-surface-sunken` value `#f8fafc` (slate-50).
+
+Apply these edits:
+
+**`app/layout.tsx` line 27** — viewport themeColor:
+```tsx
+themeColor: "#2563eb",
+```
+Change to:
+```tsx
+themeColor: "#1e293b",
+```
+
+**`app/manifest.ts` lines 10–11** — background_color and theme_color:
+```ts
+background_color: '#f9fafb',
+theme_color: '#2563eb',
+```
+Change to:
+```ts
+background_color: '#f8fafc',
+theme_color: '#1e293b',
+```
+
+**`app/icon.tsx` line 12** — icon background:
+```tsx
+background: '#2563eb',
+```
+Change to:
+```tsx
+background: '#1e293b',
+```
+
+**`app/apple-icon.tsx` line 12** — apple icon background:
+```tsx
+background: '#2563eb',
+```
+Change to:
+```tsx
+background: '#1e293b',
+```
+
+- [ ] **Step 9: Verify PWA hex changes**
+
+Grep:
+```bash
+grep -rn "#2563eb\|#f9fafb" app
+```
+Expected: empty (all `#2563eb` and `#f9fafb` replaced).
+
+- [ ] **Step 10: Commit**
 
 ```bash
-git add app/error.tsx app/not-found.tsx components/Fab.tsx components/Toast.tsx
-git commit -m "refactor(theme): apply tokens to error/404/Fab/Toast
+git add app/error.tsx app/not-found.tsx components/Fab.tsx components/Toast.tsx app/layout.tsx app/manifest.ts app/icon.tsx app/apple-icon.tsx
+git commit -m "refactor(theme): apply tokens to error/404/Fab/Toast + align PWA brand hex
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>"
 ```
@@ -1052,6 +1104,12 @@ grep -rnE "(bg-gray-|text-gray-|border-gray-|bg-yellow-|text-yellow-|border-yell
 ```
 
 Expected: empty output. If any match appears, refactor that file using the mapping rules at the top of this plan, then re-run.
+
+Also grep for the old PWA brand hex codes:
+```bash
+grep -rn "#2563eb\|#f9fafb" app
+```
+Expected: empty.
 
 - [ ] **Step 2: Confirm `app/globals.css` retains the token block**
 
