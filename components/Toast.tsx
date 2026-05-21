@@ -31,12 +31,12 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             key={t.id}
             role="status"
             className={
-              'rounded-lg px-4 py-2 text-sm shadow-lg ' +
+              'rounded-lg px-4 py-2 text-sm shadow-lg text-primary-foreground ' +
               (t.tone === 'error'
-                ? 'bg-red-600 text-white'
+                ? 'bg-danger'
                 : t.tone === 'success'
-                ? 'bg-emerald-600 text-white'
-                : 'bg-gray-900 text-white')
+                ? 'bg-learned'
+                : 'bg-foreground')
             }
           >
             {t.text}

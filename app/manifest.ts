@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: '주짓수 기술 카드',
     start_url: '/',
     display: 'standalone',
-    background_color: '#f9fafb',
-    theme_color: '#2563eb',
+    background_color: '#f8fafc',
+    theme_color: '#1e293b',
     icons: [
       { src: '/favicon.ico', sizes: 'any', type: 'image/x-icon' },
       { src: '/icon', sizes: '192x192', type: 'image/png' },
