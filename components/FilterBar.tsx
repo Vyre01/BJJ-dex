@@ -35,7 +35,7 @@ export function FilterBar() {
   }, [qInput, filters, router, pathname]);
 
   return (
-    <div className="space-y-2 p-2 bg-white border-b sticky top-[calc(3rem+env(safe-area-inset-top))] z-10">
+    <div className="space-y-2 p-2 bg-surface border-b border-border sticky top-[calc(3rem+env(safe-area-inset-top))] z-10">
       <input
         type="search"
         placeholder="🔍 기술명 검색…"
@@ -82,7 +82,7 @@ export function FilterBar() {
           onClick={() => apply({ ...filters, fav: filters.fav ? undefined : true })}
           className={
             'rounded-md border px-2 py-1 text-sm ' +
-            (filters.fav ? 'bg-yellow-100 border-yellow-400' : 'bg-white')
+            (filters.fav ? 'bg-favorite/10 border-favorite/40' : 'bg-surface border-border')
           }
         >
           ☆ 즐겨찾기
@@ -99,10 +99,10 @@ export function FilterBar() {
           className={
             'rounded-md border px-2 py-1 text-sm ' +
             (filters.learned === true
-              ? 'bg-emerald-100 border-emerald-400'
+              ? 'bg-learned/10 border-learned/40'
               : filters.learned === false
-              ? 'bg-gray-100 border-gray-400'
-              : 'bg-white')
+              ? 'bg-surface-muted border-border-strong'
+              : 'bg-surface border-border')
           }
         >
           {filters.learned === true ? '✓ 익힘만' : filters.learned === false ? '○ 미익힘만' : '✓ 익힘'}
@@ -110,7 +110,7 @@ export function FilterBar() {
         <button
           type="button"
           onClick={() => apply({})}
-          className="rounded-md border px-2 py-1 text-sm bg-white"
+          className="rounded-md border border-border px-2 py-1 text-sm bg-surface"
         >
           초기화
         </button>
