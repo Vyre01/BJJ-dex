@@ -24,7 +24,8 @@ function LoginForm() {
       toast(`로그인 실패: ${error.message}`, 'error');
       return;
     }
-    router.replace(next && next.startsWith('/') ? next : '/');
+    const safeNext = next && next.startsWith('/') && !next.startsWith('//') && !next.startsWith('/\\') ? next : '/';
+    router.replace(safeNext);
     router.refresh();
   }
 
@@ -35,6 +36,7 @@ function LoginForm() {
         <input
           type="email"
           required
+          autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="이메일"
@@ -43,6 +45,7 @@ function LoginForm() {
         <input
           type="password"
           required
+          autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="비밀번호"
@@ -62,7 +65,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<p className="p-6 text-sm text-gray-500">불러오는 중…</p>}>
       <LoginForm />
     </Suspense>
   );

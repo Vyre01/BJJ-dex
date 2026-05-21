@@ -35,6 +35,7 @@ export function useTechnique(id: string) {
       if (error) throw error;
       return data as Technique;
     },
+    staleTime: 30_000,
   });
 }
 

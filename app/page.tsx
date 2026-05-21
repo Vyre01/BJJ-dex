@@ -38,7 +38,7 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <Suspense fallback={null}>
+      <Suspense fallback={<p className="p-4 text-sm text-gray-500">불러오는 중…</p>}>
         <HomeContent />
       </Suspense>
       <Fab />
