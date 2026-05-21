@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { POSITIONS, CATEGORIES } from '@/lib/constants';
 import { filtersFromSearchParams, filtersToSearchParams } from '@/lib/filters-url';
 import type { Filters } from '@/lib/types';
@@ -17,13 +17,30 @@ export function FilterBar() {
     router.replace(qs ? `${pathname}?${qs}` : pathname);
   }
 
+  const [qInput, setQInput] = useState(filters.q ?? '');
+  const [lastUrlQ, setLastUrlQ] = useState(filters.q);
+  if (lastUrlQ !== filters.q) {
+    setLastUrlQ(filters.q);
+    setQInput(filters.q ?? '');
+  }
+
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      const nextQ = qInput.trim() || undefined;
+      if (nextQ === filters.q) return;
+      const qs = filtersToSearchParams({ ...filters, q: nextQ }).toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname);
+    }, 200);
+    return () => clearTimeout(handle);
+  }, [qInput, filters, router, pathname]);
+
   return (
     <div className="space-y-2 p-2 bg-white border-b sticky top-12 z-10">
       <input
         type="search"
         placeholder="🔍 기술명 검색…"
-        defaultValue={filters.q ?? ''}
-        onChange={(e) => apply({ ...filters, q: e.target.value || undefined })}
+        value={qInput}
+        onChange={(e) => setQInput(e.target.value)}
         className="w-full rounded-md border px-3 py-2 text-sm"
       />
       <div className="flex gap-2 overflow-x-auto whitespace-nowrap pb-1">

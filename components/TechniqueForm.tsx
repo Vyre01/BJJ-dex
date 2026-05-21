@@ -37,7 +37,9 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
     const supabase = createClient();
 
     const id = initial?.id ?? crypto.randomUUID();
+    const isNewCard = !initial;
     let imagePath: string | null = initial?.image_path ?? null;
+    let uploadedNewPath: string | null = null;
 
     try {
       if (image.kind === 'new') {
@@ -47,8 +49,8 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
           .upload(path, image.blob, { upsert: true, contentType: 'image/webp' });
         if (error) throw error;
         imagePath = path;
-      } else if (image.kind === 'none' && initial?.image_path) {
-        await supabase.storage.from(STORAGE_BUCKET).remove([initial.image_path]);
+        if (isNewCard) uploadedNewPath = path;
+      } else if (image.kind === 'none') {
         imagePath = null;
       }
 
@@ -67,11 +69,26 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
         : await supabase.from('techniques').insert(payload);
       if (error) throw error;
 
+      if (image.kind === 'none' && initial?.image_path) {
+        try {
+          await supabase.storage.from(STORAGE_BUCKET).remove([initial.image_path]);
+        } catch {
+          /* 스토리지 삭제 실패는 사용자에게 노출하지 않음 */
+        }
+      }
+
       await qc.invalidateQueries({ queryKey: techniquesKey });
       toast(initial ? '수정됨' : '추가됨', 'success');
       router.push(initial ? `/cards/${id}` : '/');
       router.refresh();
     } catch (e) {
+      if (uploadedNewPath) {
+        try {
+          await supabase.storage.from(STORAGE_BUCKET).remove([uploadedNewPath]);
+        } catch {
+          /* 정리 실패해도 원본 오류만 사용자에게 노출 */
+        }
+      }
       toast(`저장 실패: ${(e as Error).message}`, 'error');
     } finally {
       setBusy(false);
