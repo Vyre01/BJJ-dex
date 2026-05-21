@@ -1,20 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from './AuthProvider';
 
 export function Fab() {
-  const [authed, setAuthed] = useState(false);
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setAuthed(!!data.user));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setAuthed(!!session?.user);
-    });
-    return () => sub.subscription.unsubscribe();
-  }, []);
-  if (!authed) return null;
+  const { user } = useAuth();
+  if (!user) return null;
   return (
     <Link
       href="/cards/new"

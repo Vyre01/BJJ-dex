@@ -1,26 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
 import type { Technique } from '@/lib/types';
 import { publicImageUrl } from '@/lib/image';
 import { useToggleFlag } from '@/lib/queries';
-import { createClient } from '@/lib/supabase/client';
+import { useAuth } from './AuthProvider';
 import { StarRating } from './StarRating';
+import { SafeImage } from './SafeImage';
 
 export function TechniqueCard({ t }: { t: Technique }) {
   const toggle = useToggleFlag();
-  const [authed, setAuthed] = useState(false);
-
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setAuthed(!!data.user));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setAuthed(!!session?.user);
-    });
-    return () => sub.subscription.unsubscribe();
-  }, []);
+  const { user } = useAuth();
+  const authed = !!user;
 
   const imgSrc = t.image_path ? publicImageUrl(t.image_path) : null;
 
@@ -28,11 +19,7 @@ export function TechniqueCard({ t }: { t: Technique }) {
     <div className="relative rounded-lg bg-white shadow overflow-hidden">
       <Link href={`/cards/${t.id}`} className="block">
         <div className="aspect-square bg-gray-200 relative">
-          {imgSrc ? (
-            <Image src={imgSrc} alt={t.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
-          ) : (
-            <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">이미지 없음</div>
-          )}
+          <SafeImage src={imgSrc} alt={t.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
         </div>
         <div className="p-2">
           <StarRating value={t.difficulty} size="sm" />

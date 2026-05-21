@@ -1,16 +1,16 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useAuth } from '@/components/AuthProvider';
 import { Header } from '@/components/Header';
+import { SafeImage } from '@/components/SafeImage';
 import { StarRating } from '@/components/StarRating';
 import { useTechnique, useDeleteTechnique } from '@/lib/queries';
 import { publicImageUrl, deleteImage } from '@/lib/image';
-import { createClient } from '@/lib/supabase/client';
 import { useToast } from '@/components/Toast';
 
 export default function DetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -19,12 +19,8 @@ export default function DetailPage({ params }: { params: Promise<{ id: string }>
   const toast = useToast();
   const { data: t, isLoading, error } = useTechnique(id);
   const del = useDeleteTechnique();
-  const [authed, setAuthed] = useState(false);
-
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setAuthed(!!data.user));
-  }, []);
+  const { user } = useAuth();
+  const authed = !!user;
 
   async function onDelete() {
     if (!t) return;
@@ -51,13 +47,13 @@ export default function DetailPage({ params }: { params: Promise<{ id: string }>
         {t && (
           <article className="space-y-3">
             {t.image_path && (
-              <div className="relative w-full aspect-square bg-gray-100 rounded">
-                <Image
+              <div className="relative w-full aspect-square bg-gray-100 rounded overflow-hidden">
+                <SafeImage
                   src={publicImageUrl(t.image_path)}
                   alt={t.name}
                   fill
                   sizes="(max-width: 768px) 100vw, 600px"
-                  className="object-cover rounded"
+                  className="object-cover"
                 />
               </div>
             )}

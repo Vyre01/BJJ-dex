@@ -1,26 +1,17 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { useAuth } from './AuthProvider';
 
 export function Header() {
-  const [email, setEmail] = useState<string | null>(null);
+  const { user } = useAuth();
   const pathname = usePathname();
-
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setEmail(session?.user?.email ?? null);
-    });
-    return () => sub.subscription.unsubscribe();
-  }, []);
+  const email = user?.email ?? null;
 
   async function logout() {
     await createClient().auth.signOut();
-    setEmail(null);
   }
 
   return (
