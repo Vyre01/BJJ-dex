@@ -16,15 +16,15 @@ export function TechniqueCard({ t }: { t: Technique }) {
   const imgSrc = t.image_path ? publicImageUrl(t.image_path) : null;
 
   return (
-    <div className="relative rounded-lg bg-white shadow overflow-hidden">
+    <div className="relative rounded-lg bg-surface shadow overflow-hidden">
       <Link href={`/cards/${t.id}`} className="block">
-        <div className="aspect-square bg-gray-200 relative">
+        <div className="aspect-square bg-surface-muted relative">
           <SafeImage src={imgSrc} alt={t.name} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" />
         </div>
         <div className="p-2">
           <StarRating value={t.difficulty} size="sm" />
           <div className="text-sm font-medium truncate" title={t.name}>{t.name}</div>
-          <div className="text-xs text-gray-500 truncate">{t.position} · {t.category}</div>
+          <div className="text-xs text-foreground-muted truncate">{t.position} · {t.category}</div>
         </div>
       </Link>
 
@@ -38,8 +38,8 @@ export function TechniqueCard({ t }: { t: Technique }) {
             toggle.mutate({ id: t.id, field: 'is_favorite', value: !t.is_favorite });
           }}
           className={
-            'rounded-full bg-white/90 w-7 h-7 text-sm shadow disabled:opacity-50 ' +
-            (t.is_favorite ? 'text-yellow-500' : 'text-gray-400')
+            'rounded-full bg-surface/90 w-7 h-7 text-sm shadow disabled:opacity-50 ' +
+            (t.is_favorite ? 'text-favorite' : 'text-foreground-subtle')
           }
         >
           ★
@@ -53,8 +53,8 @@ export function TechniqueCard({ t }: { t: Technique }) {
             toggle.mutate({ id: t.id, field: 'is_learned', value: !t.is_learned });
           }}
           className={
-            'rounded-full bg-white/90 w-7 h-7 text-sm shadow disabled:opacity-50 ' +
-            (t.is_learned ? 'text-emerald-600' : 'text-gray-400')
+            'rounded-full bg-surface/90 w-7 h-7 text-sm shadow disabled:opacity-50 ' +
+            (t.is_learned ? 'text-learned' : 'text-foreground-subtle')
           }
         >
           ✓
