@@ -3,6 +3,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createClient } from './supabase/client';
 import type { Technique } from './types';
+import { isMockMode } from './mock/flag';
+import * as mockStore from './mock/store';
 
 export const techniquesKey = ['techniques'] as const;
 
@@ -10,6 +12,7 @@ export function useTechniques() {
   return useQuery({
     queryKey: techniquesKey,
     queryFn: async (): Promise<Technique[]> => {
+      if (isMockMode()) return mockStore.getAll();
       const supabase = createClient();
       const { data, error } = await supabase
         .from('techniques')
@@ -26,6 +29,11 @@ export function useTechnique(id: string) {
   return useQuery({
     queryKey: ['technique', id],
     queryFn: async (): Promise<Technique> => {
+      if (isMockMode()) {
+        const t = mockStore.getById(id);
+        if (!t) throw new Error('기술을 찾을 수 없습니다.');
+        return t;
+      }
       const supabase = createClient();
       const { data, error } = await supabase
         .from('techniques')
@@ -43,6 +51,10 @@ export function useToggleFlag() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (vars: { id: string; field: 'is_favorite' | 'is_learned'; value: boolean }) => {
+      if (isMockMode()) {
+        mockStore.toggleFlag(vars.id, vars.field, vars.value);
+        return;
+      }
       const supabase = createClient();
       const { error } = await supabase
         .from('techniques')
@@ -75,6 +87,10 @@ export function useDeleteTechnique() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
+      if (isMockMode()) {
+        mockStore.remove(id);
+        return;
+      }
       const supabase = createClient();
       const { error } = await supabase.from('techniques').delete().eq('id', id);
       if (error) throw error;
