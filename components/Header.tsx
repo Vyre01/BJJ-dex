@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { isMockMode } from '@/lib/mock/flag';
 import { useAuth } from './AuthProvider';
 
 export function Header() {
@@ -11,6 +12,7 @@ export function Header() {
   const email = user?.email ?? null;
 
   async function logout() {
+    if (isMockMode()) return;
     await createClient().auth.signOut();
   }
 
