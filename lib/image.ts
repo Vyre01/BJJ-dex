@@ -1,6 +1,7 @@
 import imageCompression from 'browser-image-compression';
 import { createClient } from './supabase/client';
 import { STORAGE_BUCKET } from './constants';
+import { isMockMode } from './mock/flag';
 
 const MAX_INPUT_BYTES = 5 * 1024 * 1024; // 5MB
 
@@ -33,6 +34,7 @@ export async function uploadImage(techniqueId: string, file: File): Promise<stri
 }
 
 export function publicImageUrl(path: string): string {
+  if (isMockMode()) return path;
   const supabase = createClient();
   return supabase.storage.from(STORAGE_BUCKET).getPublicUrl(path).data.publicUrl;
 }
