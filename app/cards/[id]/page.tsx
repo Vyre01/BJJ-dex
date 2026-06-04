@@ -12,6 +12,7 @@ import { StarRating } from '@/components/StarRating';
 import { useTechnique, useDeleteTechnique } from '@/lib/queries';
 import { publicImageUrl, deleteImage } from '@/lib/image';
 import { useToast } from '@/components/Toast';
+import { isMockMode } from '@/lib/mock/flag';
 
 export default function DetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -26,7 +27,7 @@ export default function DetailPage({ params }: { params: Promise<{ id: string }>
     if (!t) return;
     if (!confirm(`"${t.name}" 카드를 삭제할까요?`)) return;
     try {
-      if (t.image_path) {
+      if (t.image_path && !isMockMode()) {
         try { await deleteImage(t.image_path); } catch { /* 이미지 실패해도 레코드 삭제 진행 */ }
       }
       await del.mutateAsync(t.id);

@@ -11,6 +11,8 @@ import { StarRating } from './StarRating';
 import { ImageUploader, type ImageDraft } from './ImageUploader';
 import { publicImageUrl } from '@/lib/image';
 import { useToast } from './Toast';
+import { isMockMode } from '@/lib/mock/flag';
+import * as mockStore from '@/lib/mock/store';
 
 export function TechniqueForm({ initial }: { initial?: Technique }) {
   const router = useRouter();
@@ -34,6 +36,41 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
       return;
     }
     setBusy(true);
+
+    if (isMockMode()) {
+      try {
+        const id = initial?.id ?? crypto.randomUUID();
+        const image_path =
+          image.kind === 'new'
+            ? image.previewUrl
+            : image.kind === 'existing'
+            ? initial?.image_path ?? null
+            : null;
+        const now = new Date().toISOString();
+        const payload: Technique = {
+          id,
+          name: name.trim(),
+          position,
+          category,
+          difficulty,
+          details: details.trim() ? details : null,
+          image_path,
+          is_favorite: initial?.is_favorite ?? false,
+          is_learned: initial?.is_learned ?? false,
+          created_at: initial?.created_at ?? now,
+          updated_at: now,
+        };
+        mockStore.upsert(payload);
+        await qc.invalidateQueries({ queryKey: techniquesKey });
+        toast(initial ? '수정됨' : '추가됨', 'success');
+        router.push(initial ? `/cards/${id}` : '/');
+        router.refresh();
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
+
     const supabase = createClient();
 
     const id = initial?.id ?? crypto.randomUUID();
