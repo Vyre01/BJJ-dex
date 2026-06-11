@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { POSITIONS, CATEGORIES } from '@/lib/constants';
 import { filtersFromSearchParams, filtersToSearchParams } from '@/lib/filters-url';
 import type { Filters } from '@/lib/types';
+import { Dropdown } from './Dropdown';
 
 export function FilterBar() {
   const router = useRouter();
@@ -34,87 +35,145 @@ export function FilterBar() {
     return () => clearTimeout(handle);
   }, [qInput, filters, router, pathname]);
 
+  const hasFilters =
+    !!filters.q || !!filters.position || !!filters.category || !!filters.difficulty ||
+    filters.fav === true || filters.learned !== undefined;
+
   return (
-    <div className="space-y-2 p-2 bg-surface border-b border-border sticky top-[calc(3rem+env(safe-area-inset-top))] z-10">
-      <input
-        type="search"
-        placeholder="🔍 기술명 검색…"
-        value={qInput}
-        onChange={(e) => setQInput(e.target.value)}
-        className="w-full rounded-md border border-border px-3 py-2 text-sm"
-      />
-      <div className="flex gap-2 overflow-x-auto whitespace-nowrap pb-1">
-        <select
-          aria-label="포지션"
+    <div className="glass sticky top-[calc(3.5rem+env(safe-area-inset-top))] z-10 space-y-3 border-b border-border px-3 py-3">
+      {/* Search */}
+      <div className="relative">
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden
+          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-foreground-subtle"
+        >
+          <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
+          <path d="M20 20l-3.2-3.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+        <input
+          type="search"
+          placeholder="기술명 검색…"
+          value={qInput}
+          onChange={(e) => setQInput(e.target.value)}
+          className="w-full rounded-xl border border-border bg-surface-muted py-2.5 pl-11 pr-3 text-sm text-foreground transition-colors placeholder:text-foreground-subtle focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/25"
+        />
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        <Dropdown
+          ariaLabel="포지션"
+          placeholder="포지션"
           value={filters.position ?? ''}
-          onChange={(e) => apply({ ...filters, position: (e.target.value || undefined) as Filters['position'] })}
-          className="rounded-md border border-border px-2 py-1 text-sm"
-        >
-          <option value="">포지션</option>
-          {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
-        </select>
-        <select
-          aria-label="카테고리"
+          onChange={(v) => apply({ ...filters, position: (v || undefined) as Filters['position'] })}
+          options={POSITIONS.map((p) => ({ value: p, label: p }))}
+        />
+        <Dropdown
+          ariaLabel="카테고리"
+          placeholder="카테고리"
           value={filters.category ?? ''}
-          onChange={(e) => apply({ ...filters, category: (e.target.value || undefined) as Filters['category'] })}
-          className="rounded-md border border-border px-2 py-1 text-sm"
-        >
-          <option value="">카테고리</option>
-          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-        </select>
-        <select
-          aria-label="난이도 이상"
-          value={filters.difficulty ?? ''}
-          onChange={(e) =>
-            apply({
-              ...filters,
-              difficulty: e.target.value ? (Number(e.target.value) as 1 | 2 | 3 | 4 | 5) : undefined,
-            })
+          onChange={(v) => apply({ ...filters, category: (v || undefined) as Filters['category'] })}
+          options={CATEGORIES.map((c) => ({ value: c, label: c }))}
+        />
+        <Dropdown
+          ariaLabel="난이도 이상"
+          placeholder="난이도"
+          value={filters.difficulty ? String(filters.difficulty) : ''}
+          onChange={(v) =>
+            apply({ ...filters, difficulty: v ? (Number(v) as 1 | 2 | 3 | 4 | 5) : undefined })
           }
-          className="rounded-md border border-border px-2 py-1 text-sm"
-        >
-          <option value="">★ 이상</option>
-          {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{'★'.repeat(n)} 이상</option>)}
-        </select>
-        <button
-          type="button"
-          aria-pressed={filters.fav === true}
+          options={[1, 2, 3, 4, 5].map((n) => ({ value: String(n), label: `${'★'.repeat(n)} 이상` }))}
+        />
+
+        <span className="mx-0.5 h-5 w-px bg-border" aria-hidden />
+
+        <FilterChip
+          active={filters.fav === true}
+          activeColor="favorite"
           onClick={() => apply({ ...filters, fav: filters.fav ? undefined : true })}
-          className={
-            'rounded-md border px-2 py-1 text-sm ' +
-            (filters.fav ? 'bg-favorite/10 border-favorite/40' : 'bg-surface border-border')
-          }
+          ariaPressed={filters.fav === true}
         >
-          ☆ 즐겨찾기
-        </button>
-        <button
-          type="button"
-          aria-label="익힘 상태"
+          <Star className="h-3.5 w-3.5" filled={filters.fav === true} /> 즐겨찾기
+        </FilterChip>
+
+        <FilterChip
+          active={filters.learned !== undefined}
+          activeColor={filters.learned === false ? 'danger' : 'learned'}
+          ariaLabel="익힘 상태"
           onClick={() =>
             apply({
               ...filters,
               learned: filters.learned === true ? false : filters.learned === false ? undefined : true,
             })
           }
-          className={
-            'rounded-md border px-2 py-1 text-sm ' +
-            (filters.learned === true
-              ? 'bg-learned/10 border-learned/40'
-              : filters.learned === false
-              ? 'bg-surface-muted border-border-strong'
-              : 'bg-surface border-border')
-          }
         >
-          {filters.learned === true ? '✓ 익힘만' : filters.learned === false ? '○ 미익힘만' : '✓ 익힘'}
-        </button>
-        <button
-          type="button"
-          onClick={() => apply({})}
-          className="rounded-md border border-border px-2 py-1 text-sm bg-surface"
-        >
-          초기화
-        </button>
+          {filters.learned === false ? '○ 미익힘만' : '✓ 익힘만'}
+        </FilterChip>
+
+        {hasFilters && (
+          <button
+            type="button"
+            onClick={() => apply({})}
+            className="ml-auto rounded-full px-3 py-1.5 text-sm font-medium text-foreground-subtle transition-colors hover:text-danger"
+          >
+            초기화
+          </button>
+        )}
       </div>
     </div>
+  );
+}
+
+function FilterChip({
+  active,
+  activeColor,
+  children,
+  onClick,
+  ariaPressed,
+  ariaLabel,
+}: {
+  active: boolean;
+  activeColor: 'favorite' | 'learned' | 'danger';
+  children: React.ReactNode;
+  onClick: () => void;
+  ariaPressed?: boolean;
+  ariaLabel?: string;
+}) {
+  const activeCls =
+    activeColor === 'favorite'
+      ? 'border-favorite/50 bg-favorite/12 text-favorite'
+      : activeColor === 'learned'
+      ? 'border-learned/50 bg-learned/12 text-learned'
+      : 'border-danger/50 bg-danger/12 text-danger';
+  return (
+    <button
+      type="button"
+      aria-pressed={ariaPressed}
+      aria-label={ariaLabel}
+      onClick={onClick}
+      className={
+        'inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ' +
+        (active ? activeCls : 'border-border bg-surface text-foreground-muted hover:border-border-strong hover:text-foreground')
+      }
+    >
+      {children}
+    </button>
+  );
+}
+
+function Star({ filled, className }: { filled: boolean; className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className={className} fill={filled ? 'currentColor' : 'none'}>
+      <path
+        d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 16.9 6.6 19.6l1.2-6L3.3 9.4l6.1-.8L12 3z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

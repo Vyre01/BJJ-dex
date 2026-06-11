@@ -5,8 +5,8 @@ export default function NewCardPage() {
   return (
     <>
       <Header />
-      <main className="max-w-xl mx-auto p-4">
-        <h1 className="text-xl font-bold mb-4">새 기술 추가</h1>
+      <main className="mx-auto max-w-xl p-4">
+        <h1 className="mb-5 font-display text-2xl font-extrabold tracking-tight">새 기술 추가</h1>
         <TechniqueForm />
       </main>
     </>

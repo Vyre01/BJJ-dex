@@ -8,6 +8,7 @@ import { STORAGE_BUCKET, POSITIONS, CATEGORIES } from '@/lib/constants';
 import { techniquesKey } from '@/lib/queries';
 import type { Technique, Position, Category, Difficulty } from '@/lib/types';
 import { StarRating } from './StarRating';
+import { Dropdown } from './Dropdown';
 import { ImageUploader, type ImageDraft } from './ImageUploader';
 import { publicImageUrl } from '@/lib/image';
 import { useToast } from './Toast';
@@ -23,6 +24,7 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
   const [position, setPosition] = useState<Position>((initial?.position as Position) ?? POSITIONS[0]);
   const [category, setCategory] = useState<Category>((initial?.category as Category) ?? CATEGORIES[0]);
   const [difficulty, setDifficulty] = useState<Difficulty>(initial?.difficulty ?? 3);
+  const [steps, setSteps] = useState((initial?.steps ?? []).join('\n'));
   const [details, setDetails] = useState(initial?.details ?? '');
   const [image, setImage] = useState<ImageDraft>(
     initial?.image_path ? { kind: 'existing', url: publicImageUrl(initial.image_path) } : { kind: 'none' },
@@ -36,6 +38,10 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
       return;
     }
     setBusy(true);
+
+    // One step per line → trimmed array (null when empty).
+    const stepsList = steps.split('\n').map((s) => s.trim()).filter(Boolean);
+    const stepsValue = stepsList.length ? stepsList : null;
 
     if (isMockMode()) {
       try {
@@ -53,6 +59,7 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
           position,
           category,
           difficulty,
+          steps: stepsValue,
           details: details.trim() ? details : null,
           image_path,
           is_favorite: initial?.is_favorite ?? false,
@@ -62,6 +69,7 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
         };
         mockStore.upsert(payload);
         await qc.invalidateQueries({ queryKey: techniquesKey });
+        await qc.invalidateQueries({ queryKey: ['technique', id] });
         toast(initial ? '수정됨' : '추가됨', 'success');
         router.push(initial ? `/cards/${id}` : '/');
         router.refresh();
@@ -97,6 +105,7 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
         position,
         category,
         difficulty,
+        steps: stepsValue,
         details: details.trim() ? details : null,
         image_path: imagePath,
       };
@@ -115,6 +124,7 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
       }
 
       await qc.invalidateQueries({ queryKey: techniquesKey });
+      await qc.invalidateQueries({ queryKey: ['technique', id] });
       toast(initial ? '수정됨' : '추가됨', 'success');
       router.push(initial ? `/cards/${id}` : '/');
       router.refresh();
@@ -132,58 +142,86 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
     }
   }
 
+  const inputCls =
+    'mt-1.5 w-full rounded-xl border border-border bg-surface-muted px-3.5 py-2.5 text-sm text-foreground transition-colors placeholder:text-foreground-subtle focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/25';
+  const labelCls = 'text-sm font-medium text-foreground-muted';
+
   return (
-    <form onSubmit={onSubmit} className="space-y-3">
+    <form onSubmit={onSubmit} className="space-y-5">
       <label className="block">
-        <span className="text-sm">기술명</span>
+        <span className={labelCls}>기술명</span>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="mt-1 w-full rounded-md border px-3 py-2"
+          placeholder="예: 트라이앵글 초크"
+          className={inputCls}
         />
       </label>
 
-      <label className="block">
-        <span className="text-sm">포지션</span>
-        <select
-          value={position}
-          onChange={(e) => setPosition(e.target.value as Position)}
-          className="mt-1 w-full rounded-md border px-3 py-2"
-        >
-          {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
-        </select>
-      </label>
-
-      <label className="block">
-        <span className="text-sm">카테고리</span>
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value as Category)}
-          className="mt-1 w-full rounded-md border px-3 py-2"
-        >
-          {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-        </select>
-      </label>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <span className={labelCls}>포지션</span>
+          <div className="mt-1.5">
+            <Dropdown
+              ariaLabel="포지션"
+              placeholder="포지션"
+              clearable={false}
+              block
+              value={position}
+              onChange={(v) => setPosition(v as Position)}
+              options={POSITIONS.map((p) => ({ value: p, label: p }))}
+              className="w-full"
+            />
+          </div>
+        </div>
+        <div>
+          <span className={labelCls}>카테고리</span>
+          <div className="mt-1.5">
+            <Dropdown
+              ariaLabel="카테고리"
+              placeholder="카테고리"
+              clearable={false}
+              block
+              value={category}
+              onChange={(v) => setCategory(v as Category)}
+              options={CATEGORIES.map((c) => ({ value: c, label: c }))}
+              className="w-full"
+            />
+          </div>
+        </div>
+      </div>
 
       <div>
-        <span className="text-sm">난이도</span>
-        <div className="mt-1"><StarRating value={difficulty} onChange={setDifficulty} /></div>
+        <span className={labelCls}>난이도</span>
+        <div className="mt-1.5"><StarRating value={difficulty} onChange={setDifficulty} /></div>
       </div>
 
       <label className="block">
-        <span className="text-sm">디테일 (마크다운)</span>
+        <span className={labelCls}>기술 순서</span>
+        <textarea
+          value={steps}
+          onChange={(e) => setSteps(e.target.value)}
+          rows={5}
+          placeholder={'한 줄에 한 단계씩 입력하세요.\n예) 상대 손목을 가슴에 고정한다\n엉덩이를 빼며 각도를 튼다'}
+          className={inputCls}
+        />
+        <span className="mt-1 block text-xs text-foreground-subtle">한 줄 = 한 단계. 번호는 자동으로 매겨집니다.</span>
+      </label>
+
+      <label className="block">
+        <span className={labelCls}>디테일 (마크다운)</span>
         <textarea
           value={details}
           onChange={(e) => setDetails(e.target.value)}
           rows={6}
-          className="mt-1 w-full rounded-md border px-3 py-2 font-mono text-sm"
+          className={inputCls + ' font-mono'}
         />
       </label>
 
       <div>
-        <span className="text-sm">이미지</span>
-        <div className="mt-1">
+        <span className={labelCls}>이미지</span>
+        <div className="mt-1.5">
           <ImageUploader
             initialUrl={initial?.image_path ? publicImageUrl(initial.image_path) : null}
             onChange={setImage}
@@ -191,18 +229,18 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2 pt-1">
         <button
           type="submit"
           disabled={busy}
-          className="rounded-md bg-primary text-primary-foreground px-4 py-2 disabled:opacity-50"
+          className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
         >
           {busy ? '저장 중…' : '저장'}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-md border px-4 py-2"
+          className="rounded-xl border border-border bg-surface px-5 py-2.5 text-sm font-medium text-foreground-muted transition-colors hover:border-border-strong hover:text-foreground"
         >
           취소
         </button>

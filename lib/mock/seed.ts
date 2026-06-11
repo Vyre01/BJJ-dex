@@ -1,9 +1,19 @@
 import type { Technique } from '@/lib/types';
 
 /**
+ * Giphy CDN 핫링크 헬퍼. gif id 로부터 재생용 mp4 와 정지 프레임(poster) URL 을 만든다.
+ * (외부 CDN 직접 참조 — Giphy 는 임베드를 허용한다.)
+ */
+const giphy = (id: string) => ({
+  gif_url: `https://media.giphy.com/media/${id}/giphy.mp4`,
+  gif_poster: `https://media.giphy.com/media/${id}/giphy_s.gif`,
+});
+
+/**
  * mock 모드 초기 데이터 (불변 원본). store 가 이를 deep copy 하여 사용한다.
  * 모든 UI 상태(난이도 1~5, 즐겨찾기/익힘, 이미지 유무, 마크다운/짧은/없는 디테일,
  * 포지션·카테고리 분산)를 커버한다. created_at 은 내림차순 정렬이 자연스럽도록 구성.
+ * 일부 카드에는 호버/탭 시 재생되는 기술 GIF (Giphy) 를 큐레이션해 붙였다.
  */
 export const SEED_TECHNIQUES: Technique[] = [
   {
@@ -14,7 +24,15 @@ export const SEED_TECHNIQUES: Technique[] = [
     difficulty: 2,
     details:
       '# 암바 (Armbar)\n\n클로즈드 가드에서 가장 기본이 되는 관절기.\n\n## 핵심 포인트\n\n- 상대 손목을 **가슴에 고정**한다\n- 엉덩이를 상대 어깨 쪽으로 회전\n- 다리로 머리와 팔을 압박\n\n## 디테일\n\n팔꿈치가 `엄지 방향`으로 향하도록 정렬해야 지렛대가 산다.',
+    steps: [
+      '상대 한쪽 손목을 잡아 가슴에 고정한다',
+      '같은 쪽으로 엉덩이를 빼며 각도를 튼다',
+      '다리를 상대 머리 쪽으로 올려 어깨를 감는다',
+      '반대 다리로 상대 등을 누르며 천천히 눕는다',
+      '무릎을 조이고 엉덩이를 들어 팔꿈치를 편다',
+    ],
     image_path: '/mock/card-1.svg',
+    ...giphy('1WYS9mpxOUVbxGmdFt'),
     is_favorite: true,
     is_learned: true,
     created_at: '2026-05-20T09:00:00.000Z',
@@ -27,8 +45,16 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '서브미션',
     difficulty: 3,
     details:
-      '# 트라이앵글 초크\n\n다리로 삼각형을 만들어 경동맥을 압박하는 조르기.\n\n## 순서\n\n1. 한 팔을 안으로, 한 팔을 밖으로 분리\n2. 다리를 상대 목과 한쪽 팔에 건다\n3. 정강이를 무릎 뒤에 걸고 **각도를 튼다**\n\n각도가 정면이면 잘 안 들어간다. 옆으로 빠져라.',
+      '# 트라이앵글 초크\n\n다리로 삼각형을 만들어 경동맥을 압박하는 조르기.\n\n각도가 정면이면 잘 안 들어간다. 옆으로 빠져라.',
+    steps: [
+      '상대 한 팔은 안으로, 한 팔은 밖으로 분리한다',
+      '한 다리를 상대 목과 한쪽 팔 위로 건다',
+      '정강이를 반대쪽 무릎 뒤에 걸어 다리를 잠근다',
+      '상대 팔을 몸 가운데로 당기고 각도를 옆으로 튼다',
+      '머리를 당기며 무릎을 조여 마무리한다',
+    ],
     image_path: '/mock/card-2.svg',
+    ...giphy('kglTX9z2osEHUPcETZ'),
     is_favorite: true,
     is_learned: false,
     created_at: '2026-05-19T09:00:00.000Z',
@@ -41,6 +67,13 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '서브미션',
     difficulty: 4,
     details: '어깨 관절을 다리로 압박하는 기술. 스윕으로도 전환 가능해 활용도가 높다.',
+    steps: [
+      '오픈 가드에서 상대 한쪽 팔을 다리 아래로 통과시킨다',
+      '그 팔을 다리로 감으며 몸을 옆으로 회전한다',
+      '앉은 자세로 일어나 상대 어깨 위에 정강이를 얹는다',
+      '상대 등 쪽으로 엉덩이를 붙이고 자세를 낮춘다',
+      '허리를 앞으로 숙여 어깨 관절을 압박한다',
+    ],
     image_path: '/mock/card-3.svg',
     is_favorite: false,
     is_learned: false,
@@ -54,7 +87,14 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '서브미션',
     difficulty: 2,
     details: '양손으로 상대 손목과 자기 손목을 잡아 어깨를 비트는 figure-four 그립.',
+    steps: [
+      '사이드 컨트롤에서 상대 손목을 잡는다',
+      '반대 손을 상대 팔 밑으로 넣어 figure-four 그립을 만든다',
+      '상대 팔꿈치를 90도로 세운다',
+      '손목을 등 쪽으로 밀어 올리며 어깨를 비튼다',
+    ],
     image_path: '/mock/card-4.svg',
+    ...giphy('iJyZBd9QJGhjVgFQye'),
     is_favorite: false,
     is_learned: true,
     created_at: '2026-05-17T09:00:00.000Z',
@@ -67,7 +107,14 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '스윕',
     difficulty: 1,
     details:
-      '# 시저 스윕\n\n가장 먼저 배우는 스윕 중 하나.\n\n## 메커니즘\n\n- 한 다리는 상대 **무릎 아래**, 한 다리는 엉덩이 높이\n- 가위질하듯 다리를 교차\n- 상대 균형을 대각선으로 무너뜨린다\n\n그립: 깃과 소매를 동시에 잡아 상체를 묶는다.',
+      '# 시저 스윕\n\n가장 먼저 배우는 스윕 중 하나. 그립은 깃과 소매를 동시에 잡아 상체를 묶는다.',
+    steps: [
+      '깃과 소매를 잡아 상대 상체를 묶는다',
+      '한 다리는 상대 무릎 아래, 한 다리는 엉덩이 높이에 둔다',
+      '상대를 대각선으로 끌어 균형을 무너뜨린다',
+      '가위질하듯 다리를 교차하며 넘긴다',
+      '마운트로 올라가 자세를 잡는다',
+    ],
     image_path: '/mock/card-5.svg',
     is_favorite: true,
     is_learned: true,
@@ -81,6 +128,13 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '스윕',
     difficulty: 1,
     details: '상체를 일으켜 엉덩이로 밀어 넘기는 스윕. 키무라와 연계가 좋다.',
+    steps: [
+      '클로즈드 가드를 풀고 상체를 일으킨다',
+      '한 손으로 바닥을 짚어 몸을 지탱한다',
+      '반대 팔로 상대 어깨를 감는다',
+      '엉덩이를 상대 쪽으로 밀어붙여 옆으로 넘긴다',
+      '마운트로 전환한다',
+    ],
     image_path: null,
     is_favorite: false,
     is_learned: false,
@@ -94,7 +148,14 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '테이크다운',
     difficulty: 3,
     details: '레슬링 기본 테이크다운. 레벨 체인지 후 두 다리를 안아 넘어뜨린다.',
+    steps: [
+      '레벨을 낮춰 상대 하체로 파고든다',
+      '머리를 상대 가슴 옆에 붙이고 두 다리를 감싼다',
+      '어깨로 밀며 한쪽으로 각도를 꺾는다',
+      '상대를 매트에 눕히고 상위를 컨트롤한다',
+    ],
     image_path: '/mock/card-6.svg',
+    ...giphy('GC9whAm90AVcYcGUVm'),
     is_favorite: false,
     is_learned: false,
     created_at: '2026-05-14T09:00:00.000Z',
@@ -107,7 +168,13 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '서브미션',
     difficulty: 5,
     details:
-      '# 토 홀드\n\n발목·발 관절을 비트는 리그락. **부상 위험이 높으니** 천천히.\n\n## 주의\n\n1. 발을 겨드랑이에 고정\n2. figure-four 그립으로 발등을 감싼다\n3. 손목을 말아 회전 — `급격한 토크 금지`\n\n경기 규정상 일부 단체에서는 금지된다.',
+      '# 토 홀드\n\n발목·발 관절을 비트는 리그락. **부상 위험이 높으니** 천천히. 경기 규정상 일부 단체에서는 금지된다.',
+    steps: [
+      '상대 발을 겨드랑이에 단단히 고정한다',
+      'figure-four 그립으로 발등을 감싼다',
+      '손목을 말아 발을 천천히 회전시킨다',
+      '급격한 토크 없이 서서히 압박한다 (부상 주의)',
+    ],
     image_path: '/mock/card-7.svg',
     is_favorite: true,
     is_learned: false,
@@ -121,6 +188,13 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '트랜지션',
     difficulty: 5,
     details: '데라히바 가드에서 구르며 백을 잡는 현대 주짓수의 상징적 무브.',
+    steps: [
+      '데라히바 가드로 상대 다리를 컨트롤한다',
+      '깃을 잡고 엉덩이를 회전하며 아래로 구른다',
+      '상대 엉덩이 아래로 파고든다',
+      '회전을 완성하며 등 뒤를 점유한다',
+      '두 훅을 걸어 백 컨트롤을 마무리한다',
+    ],
     image_path: null,
     is_favorite: false,
     is_learned: false,
@@ -134,6 +208,12 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '패스',
     difficulty: 3,
     details: '무릎을 상대 허벅지 위로 미끄러뜨려 가드를 통과하는 기본 패스.',
+    steps: [
+      '하프 가드에서 무릎을 상대 허벅지 위에 올린다',
+      '깃과 목을 컨트롤해 상체를 눌러 고정한다',
+      '무릎을 바깥으로 미끄러뜨리며 다리를 빼낸다',
+      '사이드 컨트롤로 정착한다',
+    ],
     image_path: '/mock/card-8.svg',
     is_favorite: false,
     is_learned: true,
@@ -147,7 +227,15 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '트랜지션',
     difficulty: 4,
     details: null,
+    steps: [
+      '터틀 자세의 상대 등에 가슴을 붙인다',
+      '한 손을 겨드랑이 아래로 넣어 시트벨트 그립을 만든다',
+      '첫 번째 훅을 상대 엉덩이 안쪽에 건다',
+      '상대를 내 쪽으로 굴려 두 번째 훅을 건다',
+      '백 컨트롤을 완성한다',
+    ],
     image_path: null,
+    ...giphy('l3vQZPnDQhl0QLSeY'),
     is_favorite: false,
     is_learned: false,
     created_at: '2026-05-10T09:00:00.000Z',
@@ -160,6 +248,12 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '이스케이프',
     difficulty: 2,
     details: null,
+    steps: [
+      '마운트당한 상태에서 팔꿈치로 프레임을 만든다',
+      '새우처럼 엉덩이를 빼며 공간을 만든다',
+      '한쪽 무릎을 상대 다리 사이로 빼낸다',
+      '반대쪽도 빼내 하프 가드 또는 가드를 회복한다',
+    ],
     image_path: '/mock/card-1.svg',
     is_favorite: false,
     is_learned: true,
@@ -173,6 +267,12 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '서브미션',
     difficulty: 4,
     details: null,
+    steps: [
+      '상대가 터틀이거나 사이드일 때 한 팔을 목과 겨드랑이 사이로 넣는다',
+      '그 팔을 상대 목 뒤로 깊게 통과시킨다',
+      '반대 팔과 깍지를 껴 figure 그립을 만든다',
+      '가슴으로 압박하며 조른다',
+    ],
     image_path: null,
     is_favorite: false,
     is_learned: false,
@@ -186,6 +286,12 @@ export const SEED_TECHNIQUES: Technique[] = [
     category: '가드 리커버리',
     difficulty: 3,
     details: null,
+    steps: [
+      '사이드 컨트롤당한 상태에서 팔로 프레임을 만든다',
+      '새우로 엉덩이를 빼 공간을 확보한다',
+      '무릎을 상대와 나 사이로 끼워 넣는다',
+      '다리를 감아 가드를 회복한다',
+    ],
     image_path: null,
     is_favorite: false,
     is_learned: false,

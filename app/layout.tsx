@@ -1,16 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo, IBM_Plex_Sans_KR } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// Body + UI — covers Korean and Latin with real character (not Arial/Inter).
+// preload:false avoids requiring a Korean subset preload tag.
+const sansKr = IBM_Plex_Sans_KR({
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans-kr",
+  display: "swap",
+  preload: false,
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Display — athletic grotesque for the wordmark and headings.
+const display = Archivo({
   subsets: ["latin"],
+  weight: ["600", "700", "800"],
+  variable: "--font-display",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -19,12 +26,12 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: "GrappleGuide",
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1e293b",
+  themeColor: "#0a0e14",
   viewportFit: "cover",
 };
 
@@ -34,8 +41,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-screen bg-surface-sunken text-foreground flex flex-col">
+    <html lang="ko" className={`${sansKr.variable} ${display.variable} h-full antialiased`}>
+      <body className="min-h-screen text-foreground flex flex-col">
         <Providers>{children}</Providers>
       </body>
     </html>

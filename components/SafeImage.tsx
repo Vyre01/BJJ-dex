@@ -19,8 +19,9 @@ export function SafeImage({ src, alt, fallbackText = '이미지 없음', ...rest
 
   if (!src || errored) {
     return (
-      <div className="absolute inset-0 flex items-center justify-center bg-surface-muted text-foreground-subtle text-sm">
-        {fallbackText}
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-surface-muted to-surface text-foreground-subtle">
+        <span className="font-display text-3xl font-extrabold tracking-tight text-foreground-subtle/30">GG</span>
+        <span className="text-xs">{fallbackText}</span>
       </div>
     );
   }

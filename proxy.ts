@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { isMockMode } from '@/lib/mock/flag';
 
 export async function proxy(req: NextRequest) {
+  // mock 모드는 항상 로그인 상태로 취급한다 (AuthProvider 와 동일). 실제 세션 검사를 건너뛴다.
+  if (isMockMode()) return NextResponse.next({ request: req });
+
   const res = NextResponse.next({ request: req });
 
   const supabase = createServerClient(

@@ -57,16 +57,17 @@ export function ImageUploader({
   return (
     <div className="space-y-2">
       {url ? (
-        <div className="relative w-full aspect-square bg-surface-muted rounded">
-          <Image src={url} alt="미리보기" fill className="object-cover rounded" sizes="100vw" unoptimized />
+        <div className="relative aspect-square w-full overflow-hidden rounded-xl border border-border bg-surface-muted">
+          <Image src={url} alt="미리보기" fill className="object-cover" sizes="100vw" unoptimized />
         </div>
       ) : (
-        <div className="w-full aspect-square bg-surface-muted rounded flex items-center justify-center text-foreground-subtle text-sm">
-          이미지 없음
+        <div className="flex aspect-square w-full flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-border bg-surface-muted text-foreground-subtle">
+          <span className="font-display text-3xl font-extrabold tracking-tight text-foreground-subtle/30">GG</span>
+          <span className="text-xs">이미지 없음</span>
         </div>
       )}
       <div className="flex gap-2">
-        <label className="rounded-md border px-3 py-1 text-sm cursor-pointer">
+        <label className="rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground-muted transition-colors hover:border-border-strong hover:text-foreground">
           이미지 선택
           <input
             type="file"
@@ -79,7 +80,11 @@ export function ImageUploader({
           />
         </label>
         {state.kind !== 'none' && (
-          <button type="button" onClick={clear} className="rounded-md border px-3 py-1 text-sm">
+          <button
+            type="button"
+            onClick={clear}
+            className="rounded-xl border border-border bg-surface px-4 py-2 text-sm font-medium text-foreground-muted transition-colors hover:border-border-strong hover:text-foreground"
+          >
             제거
           </button>
         )}

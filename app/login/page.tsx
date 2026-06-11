@@ -29,36 +29,46 @@ function LoginForm() {
     router.refresh();
   }
 
+  const inputCls =
+    'w-full rounded-xl border border-border bg-surface-muted px-3.5 py-2.5 text-sm text-foreground transition-colors placeholder:text-foreground-subtle focus:border-primary/60 focus:outline-none focus:ring-2 focus:ring-primary/25';
+
   return (
-    <main className="max-w-sm mx-auto p-4">
-      <h1 className="text-xl font-bold mb-4">로그인</h1>
-      <form onSubmit={onSubmit} className="space-y-3">
-        <input
-          type="email"
-          required
-          autoComplete="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="이메일"
-          className="w-full rounded-md border px-3 py-2"
-        />
-        <input
-          type="password"
-          required
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="비밀번호"
-          className="w-full rounded-md border px-3 py-2"
-        />
-        <button
-          type="submit"
-          disabled={busy}
-          className="w-full rounded-md bg-primary text-primary-foreground py-2 disabled:opacity-50"
-        >
-          {busy ? '로그인 중…' : '로그인'}
-        </button>
-      </form>
+    <main className="mx-auto flex min-h-[80vh] max-w-sm flex-col justify-center p-4">
+      <div className="rounded-2xl border border-border bg-surface p-6 shadow-xl shadow-black/30">
+        <div className="mb-6 flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-learned font-display text-sm font-extrabold text-primary-foreground shadow-md shadow-primary/30">
+            GG
+          </span>
+          <h1 className="font-display text-xl font-extrabold tracking-tight">로그인</h1>
+        </div>
+        <form onSubmit={onSubmit} className="space-y-3">
+          <input
+            type="email"
+            required
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="이메일"
+            className={inputCls}
+          />
+          <input
+            type="password"
+            required
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="비밀번호"
+            className={inputCls}
+          />
+          <button
+            type="submit"
+            disabled={busy}
+            className="w-full rounded-xl bg-primary py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary-hover disabled:opacity-50"
+          >
+            {busy ? '로그인 중…' : '로그인'}
+          </button>
+        </form>
+      </div>
     </main>
   );
 }

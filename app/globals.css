@@ -1,39 +1,135 @@
 @import "tailwindcss";
 
 @theme inline {
-  /* Surfaces */
-  --color-background: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-muted: #f1f5f9;
-  --color-surface-sunken: #f8fafc;
-  --color-surface-inverse: #0f172a;
+  /* Surfaces — deep "dojo" ink, layered */
+  --color-background: #0a0e14;
+  --color-surface: #121822;
+  --color-surface-muted: #1a2230;
+  --color-surface-sunken: #0a0e14;
+  --color-surface-inverse: #f8fafc;
 
   /* Borders */
-  --color-border: #e2e8f0;
-  --color-border-strong: #cbd5e1;
+  --color-border: #232d3c;
+  --color-border-strong: #38465a;
 
   /* Foreground (text) */
-  --color-foreground: #0f172a;
-  --color-foreground-muted: #475569;
-  --color-foreground-subtle: #94a3b8;
+  --color-foreground: #eef2f7;
+  --color-foreground-muted: #9aa7b8;
+  --color-foreground-subtle: #5d6b7e;
 
-  /* Primary action */
-  --color-primary: #1e293b;
-  --color-primary-hover: #334155;
-  --color-primary-foreground: #ffffff;
+  /* Primary action — electric cyan */
+  --color-primary: #2dd4ff;
+  --color-primary-hover: #6ee0ff;
+  --color-primary-foreground: #04131c;
 
   /* Status */
-  --color-favorite: #0ea5e9;
-  --color-learned: #0d9488;
-  --color-danger: #e11d48;
+  --color-favorite: #f5b73d; /* gold */
+  --color-learned: #2dd4bf;  /* teal */
+  --color-danger: #fb6f84;
 
-  /* Fonts (preserved) */
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Fonts */
+  --font-sans: var(--font-sans-kr), "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-sans-kr), system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 }
 
-body {
-  background: var(--color-surface-sunken);
-  color: var(--color-foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  /* Default border color (Tailwind v4 ships currentColor; restore a themed default) */
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background:
+      radial-gradient(1100px 600px at 50% -15%, color-mix(in srgb, var(--color-primary) 9%, transparent), transparent 55%),
+      radial-gradient(900px 500px at 100% 0%, color-mix(in srgb, var(--color-learned) 6%, transparent), transparent 50%),
+      var(--color-surface-sunken);
+    background-attachment: fixed;
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Requirement #1 — anything tappable feels tappable */
+  button,
+  a,
+  select,
+  summary,
+  [role="button"],
+  [role="option"],
+  label[for],
+  input[type="checkbox"],
+  input[type="radio"] {
+    cursor: pointer;
+  }
+  button:disabled,
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+
+  /* Form controls inherit the theme even where markup only sets layout classes */
+  input,
+  textarea,
+  select {
+    background-color: var(--color-surface);
+    color: var(--color-foreground);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-foreground-subtle);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-primary) 32%, transparent);
+    color: var(--color-foreground);
+  }
+
+  /* Slim, themed scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer utilities {
+  @keyframes pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .animate-pop-in {
+    animation: pop-in 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top;
+  }
+
+  /* Glassy translucent panel used by cards, dropdowns, header */
+  .glass {
+    background: color-mix(in srgb, var(--color-surface) 72%, transparent);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+  }
 }
