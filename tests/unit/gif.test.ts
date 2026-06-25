@@ -14,6 +14,12 @@ describe('derivePoster', () => {
     );
   });
 
+  it('쿼리스트링이 붙어도 포스터를 도출하고 쿼리는 제거한다', () => {
+    expect(derivePoster('https://media.giphy.com/media/abc123/giphy.mp4?cid=1')).toBe(
+      'https://media.giphy.com/media/abc123/giphy_s.gif',
+    );
+  });
+
   it('Giphy가 아닌 mp4면 null', () => {
     expect(derivePoster('https://example.com/clip.mp4')).toBeNull();
   });
