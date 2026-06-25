@@ -129,7 +129,7 @@ export function Dropdown({
           id={listId}
           role="listbox"
           aria-label={ariaLabel}
-          className="animate-pop-in absolute left-0 top-[calc(100%+0.4rem)] z-30 max-h-72 min-w-[10rem] overflow-y-auto rounded-2xl border border-border-strong glass p-1.5 shadow-2xl shadow-black/50"
+          className="animate-pop-in absolute left-0 top-[calc(100%+0.4rem)] z-30 max-h-72 min-w-[10rem] overflow-y-auto rounded-2xl border border-border-strong bg-surface p-1.5 shadow-2xl shadow-black/50"
         >
           {items.map((opt, i) => {
             const isSel = opt.value === value;
