@@ -11,6 +11,7 @@ import { StarRating } from './StarRating';
 import { Dropdown } from './Dropdown';
 import { ImageUploader, type ImageDraft } from './ImageUploader';
 import { publicImageUrl } from '@/lib/image';
+import { derivePoster } from '@/lib/gif';
 import { useToast } from './Toast';
 import { isMockMode } from '@/lib/mock/flag';
 import * as mockStore from '@/lib/mock/store';
@@ -29,6 +30,7 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
   const [image, setImage] = useState<ImageDraft>(
     initial?.image_path ? { kind: 'existing', url: publicImageUrl(initial.image_path) } : { kind: 'none' },
   );
+  const [gifUrl, setGifUrl] = useState(initial?.gif_url ?? '');
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
@@ -42,6 +44,14 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
     // One step per line → trimmed array (null when empty).
     const stepsList = steps.split('\n').map((s) => s.trim()).filter(Boolean);
     const stepsValue = stepsList.length ? stepsList : null;
+
+    // GIF URL → null(빈 값) 정규화. 포스터는 Giphy면 자동 도출, URL이 그대로면 기존 포스터 보존.
+    const gifValue = gifUrl.trim() || null;
+    const gifPosterValue = !gifValue
+      ? null
+      : gifValue === (initial?.gif_url ?? null)
+        ? initial?.gif_poster ?? derivePoster(gifValue)
+        : derivePoster(gifValue);
 
     if (isMockMode()) {
       try {
@@ -62,6 +72,8 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
           steps: stepsValue,
           details: details.trim() ? details : null,
           image_path,
+          gif_url: gifValue,
+          gif_poster: gifPosterValue,
           is_favorite: initial?.is_favorite ?? false,
           is_learned: initial?.is_learned ?? false,
           created_at: initial?.created_at ?? now,
@@ -108,6 +120,8 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
         steps: stepsValue,
         details: details.trim() ? details : null,
         image_path: imagePath,
+        gif_url: gifValue,
+        gif_poster: gifPosterValue,
       };
 
       const { error } = initial
@@ -217,6 +231,32 @@ export function TechniqueForm({ initial }: { initial?: Technique }) {
           rows={6}
           className={inputCls + ' font-mono'}
         />
+      </label>
+
+      <label className="block">
+        <span className={labelCls}>GIF (URL)</span>
+        <input
+          value={gifUrl}
+          onChange={(e) => setGifUrl(e.target.value)}
+          placeholder="예: https://media.giphy.com/media/xxxx/giphy.mp4"
+          className={inputCls}
+        />
+        <span className="mt-1 block text-xs text-foreground-subtle">
+          호버/탭 시 재생되는 미리보기 영상(mp4) URL. 비우면 GIF 없음.
+        </span>
+        {gifUrl.trim() && (
+          <div className="relative mt-2 aspect-square w-full overflow-hidden rounded-xl border border-border bg-surface-muted">
+            <video
+              key={gifUrl.trim()}
+              src={gifUrl.trim()}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="h-full w-full object-cover"
+            />
+          </div>
+        )}
       </label>
 
       <div>
