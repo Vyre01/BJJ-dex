@@ -44,6 +44,23 @@ export function TechniqueCard({ t }: { t: Technique }) {
 
       {authed && (
         <div className="absolute right-2 top-2 flex gap-1.5">
+          <Link
+            href={`/cards/${t.id}/edit`}
+            aria-label="수정"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white/80 opacity-0 shadow-md backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-black/60 hover:text-white focus-visible:opacity-100 active:scale-95 group-hover:opacity-100 [@media(hover:none)]:opacity-100"
+          >
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" aria-hidden>
+              <path
+                d="M4 20h4L18.5 9.5a2.12 2.12 0 0 0-3-3L5 17v3z"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path d="M13.5 6.5l4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </Link>
+
           <IconToggle
             label={t.is_favorite ? '즐겨찾기 해제' : '즐겨찾기'}
             active={t.is_favorite}
